@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Expo Quiz</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #d0eafc, #80cde6);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            min-height: 80vh;
+            position: relative;
+        }
+
+        h1 {
+            color: #00796b;
+            margin-bottom: 20px;
+        }
+
+        .quiz-container, .result, .leaderboard {
+            display: none;
+        }
+
+        .quiz-question {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .quiz-answer {
+            background-color: #00796b;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            display: block;
+            width: 100%;
+            font-size: 1.2em;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .quiz-answer:hover {
+            background: linear-gradient(to right, #004d40, #00796b);
+            transform: scale(1.05);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f5f5f5;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .result h3 {
+            margin-bottom: 20px;
+            color: #00796b;
+        }
+
+        .result form input, .result form button {
+            margin-top: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #00796b;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .result form button {
+            background-color: #00796b;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background 0.3s ease;
+        }
+
+        .result form button:hover {
+            background: linear-gradient(to right, #004d40, #00796b);
+        }
+
+        .leaderboard {
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .top-podium {
+            background: linear-gradient(to bottom, #fbc02d, #ffeb3b);
+            color: #000;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .user-info {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            background: #f5f5f5;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+            font-size: 1.2em;
+        }
+
+        .user-info h3 {
+            margin-bottom: 10px;
+            color: #00796b;
+        }
+
+        .user-info p {
+            margin: 5px 0;
+        }
+
+        button {
+            background-color: #00796b;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-top: 15px;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #004d40, #00796b);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mental Health Expo Quiz</h1>
+        <div id="intro">
+            <p>Welcome! Take the quiz, test your knowledge, and compete for the top spot! Complete the quiz as quickly as you can!</p>
+            <button id="startQuizBtn">Start Quiz</button>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <div id="questionContainer" class="quiz-question"></div>
+            <div id="answersContainer"></div>
+            <p>Time left: <span id="timer">60</span> seconds</p>
+        </div>
+
+        <div class="result" id="resultContainer">
+            <h3>Your Score: <span id="score"></span></h3>
+            <p>Well done! Enter your details to see the leaderboard.</p>
+            <form id="leaderboardForm">
+                <label for="name">Name: </label><br>
+                <input type="text" id="name" required><br>
+                <label for="yearGroup">Year Group: </label><br>
+                <input type="text" id="yearGroup" required><br>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+
+        <div class="leaderboard" id="leaderboardContainer">
+            <div class="top-podium" id="topPodium">
+                <h2>Top Performer</h2>
+                <p id="topName"></p>
+                <p id="topTime"></p>
+                <p id="topScore"></p>
+                <p id="topYearGroup"></p>
+            </div>
+            <div class="user-info" id="userInfo">
+                <h3>Your Results</h3>
+                <p id="userName"></p>
+                <p id="userTime"></p>
+                <p id="userScore"></p>
+                <p id="userYearGroup"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "What is a common sign of anxiety?", answers: ["Rapid heartbeat", "Laughter", "Sleepiness", "Excessive energy"], correct: 0 },
+            { question: "What does BPD stand for?", answers: ["Borderline Personality Disorder", "Bipolar Disorder", "Burnout Prevention Disease", "Brain Processing Disorder"], correct: 0 },
+            { question: "Which is a healthy way to deal with stress?", answers: ["Exercise", "Avoiding it", "Binge eating", "Procrastination"], correct: 0 },
+            { question: "What is an effective way to manage anger?", answers: ["Exercise", "Ignoring it", "Shouting", "Complaining"], correct: 0 },
+            { question: "Which method helps with sleep issues?", answers: ["Meditation", "Caffeine", "Watching TV", "Stress"], correct: 0 },
+            { question: "What is a key symptom of depression?", answers: ["Persistent sadness", "Excessive happiness", "Energy", "Excitement"], correct: 0 },
+            { question: "What can improve mental health?", answers: ["Healthy relationships", "Isolating yourself", "Overworking", "Ignoring problems"], correct: 0 },
+            { question: "Which practice helps build resilience?", answers: ["Mindfulness", "Avoiding challenges", "Ignoring feelings", "Overworking"], correct: 0 },
+            { question: "What is a sign of good mental health?", answers: ["Positive self-image", "Constant self-criticism", "Avoiding social interaction", "Feeling overwhelmed"], correct: 0 },
+            { question: "Which practice can help with mindfulness?", answers: ["Meditation", "Multi-tasking", "Ignoring feelings", "Overworking"], correct: 0 },
+        ];
+
+        const startQuizBtn = document.getElementById("startQuizBtn");
+        const quizContainer = document.getElementById("quizContainer");
+        const questionContainer = document.getElementById("questionContainer");
+        const answersContainer = document.getElementById("answersContainer");
+        const timerDisplay = document.getElementById("timer");
+        const resultContainer = document.getElementById("resultContainer");
+        const scoreDisplay = document.getElementById("score");
+        const leaderboardForm = document.getElementById("leaderboardForm");
+        const leaderboardContainer = document.getElementById("leaderboardContainer");
+        const topPodium = document.getElementById("topPodium");
+        const userInfo = document.getElementById("userInfo");
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let startTime;
+        let timerInterval;
+        let quizCompleted = false;
+        const leaderboard = [];
+
+        startQuizBtn.addEventListener("click", () => {
+            document.getElementById("intro").style.display = "none";
+            quizContainer.style.display = "block";
+            startTime = new Date();
+            loadQuestion();
+            startTimer();
+        });
+
+        function loadQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            questionContainer.textContent = currentQuestion.question;
+            answersContainer.innerHTML = "";
+            shuffleArray(currentQuestion.answers).forEach((answer, index) => {
+                const button = document.createElement("button");
+                button.textContent = answer;
+                button.classList.add("quiz-answer");
+                button.addEventListener("click", () => handleAnswer(index));
+                answersContainer.appendChild(button);
+            });
+        }
+
+        function handleAnswer(selectedIndex) {
+            const correctIndex = questions[currentQuestionIndex].correct;
+            if (selectedIndex === correctIndex) {
+                score++;
+            }
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                submitQuiz();
+            }
+        }
+
+        function startTimer() {
+            let timeLeft = 60;
+            timerDisplay.textContent = timeLeft;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function submitQuiz() {
+            if (quizCompleted) return;
+            clearInterval(timerInterval);
+            quizCompleted = true;
+            quizContainer.style.display = "none";
+            resultContainer.style.display = "block";
+            scoreDisplay.textContent = score;
+        }
+
+        leaderboardForm.addEventListener("submit", saveScore);
+
+        function saveScore(event) {
+            event.preventDefault();
+            const name = document.getElementById("name").value;
+            const yearGroup = document.getElementById("yearGroup").value;
+            const endTime = new Date();
+            const timeTaken = (endTime - startTime) / 1000;
+            leaderboard.push({ name, yearGroup, score, timeTaken });
+            leaderboard.sort((a, b) => {
+                if (b.score !== a.score) return b.score - a.score;
+                return a.timeTaken - b.timeTaken;
+            });
+            if (leaderboard.length > 1) leaderboard.length = 1; // Only keep the top scorer
+            displayLeaderboard();
+        }
+
+        function displayLeaderboard() {
+            resultContainer.style.opacity = 0;
+            setTimeout(() => {
+                resultContainer.style.display = "none";
+                leaderboardContainer.style.display = "block";
+                leaderboardContainer.style.opacity = 1;
+
+                const topScorer = leaderboard[0];
+                document.getElementById("topName").textContent = `Name: ${topScorer.name}`;
+                document.getElementById("topTime").textContent = `Time: ${topScorer.timeTaken.toFixed(2)}s`;
+                document.getElementById("topScore").textContent = `Score: ${topScorer.score} pts`;
+                document.getElementById("topYearGroup").textContent = `Year Group: ${topScorer.yearGroup}`;
+
+                document.getElementById("userName").textContent = `Name: ${topScorer.name}`;
+                document.getElementById("userTime").textContent = `Time: ${topScorer.timeTaken.toFixed(2)}s`;
+                document.getElementById("userScore").textContent = `Score: ${topScorer.score} pts`;
+                document.getElementById("userYearGroup").textContent = `Year Group: ${topScorer.yearGroup}`;
+
+                if (!topScorer) {
+                    document.getElementById("topPodium").style.display = "none";
+                }
+            }, 500);
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+    </script>
+</body>
+</html>
